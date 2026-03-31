@@ -1,5 +1,7 @@
+const STATS_API_URL = "https://calculadora-estatistica-1.onrender.com/api/stats";
+
 export async function calculateStatistics(values) {
-  const response = await fetch("/api/stats", {
+  const response = await fetch(STATS_API_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
