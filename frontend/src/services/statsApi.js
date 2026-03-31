@@ -1,4 +1,6 @@
-const STATS_API_URL = "https://calculadora-estatistica-1.onrender.com/api/stats";
+import { API_BASE_URL } from "../config/api";
+
+const STATS_API_URL = `${API_BASE_URL}/api/stats`;
 
 export async function calculateStatistics(values) {
   const response = await fetch(STATS_API_URL, {
