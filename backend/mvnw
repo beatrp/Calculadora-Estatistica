@@ -1,0 +1,42 @@
+#!/bin/sh
+set -e
+
+BASE_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+WRAPPER_DIR="$BASE_DIR/.mvn/wrapper"
+PROPERTIES_FILE="$WRAPPER_DIR/maven-wrapper.properties"
+JAR_FILE="$WRAPPER_DIR/maven-wrapper.jar"
+JAVA_CMD="${JAVA_HOME:+$JAVA_HOME/bin/}java"
+
+if [ ! -x "$JAVA_CMD" ]; then
+  JAVA_CMD=java
+fi
+
+if ! command -v "$JAVA_CMD" >/dev/null 2>&1; then
+  echo "Error: Java not found. Set JAVA_HOME or add java to PATH." >&2
+  exit 1
+fi
+
+if [ ! -f "$PROPERTIES_FILE" ]; then
+  echo "Error: $PROPERTIES_FILE not found." >&2
+  exit 1
+fi
+
+if [ ! -f "$JAR_FILE" ]; then
+  WRAPPER_URL=$(sed -n 's/^wrapperUrl=//p' "$PROPERTIES_FILE")
+  if [ -z "$WRAPPER_URL" ]; then
+    echo "Error: wrapperUrl not configured in $PROPERTIES_FILE." >&2
+    exit 1
+  fi
+
+  echo "Downloading Maven wrapper jar..."
+  if command -v curl >/dev/null 2>&1; then
+    curl -fsSL "$WRAPPER_URL" -o "$JAR_FILE"
+  elif command -v wget >/dev/null 2>&1; then
+    wget -q "$WRAPPER_URL" -O "$JAR_FILE"
+  else
+    echo "Error: curl or wget is required to download the Maven wrapper jar." >&2
+    exit 1
+  fi
+fi
+
+exec "$JAVA_CMD" -classpath "$JAR_FILE" -Dmaven.multiModuleProjectDirectory="$BASE_DIR" org.apache.maven.wrapper.MavenWrapperMain "$@"
