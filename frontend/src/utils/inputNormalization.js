@@ -1,21 +1,20 @@
-ï»¿function parseNumber(value) {
+function parseNumber(value) {
   return Number(String(value).replace(",", "."));
 }
 
 function buildFrequencyItems(values) {
   const frequencyMap = new Map();
 
-  values.forEach((value) => {
+  for (const value of values) {
     frequencyMap.set(value, (frequencyMap.get(value) ?? 0) + 1);
-  });
+  }
 
   return [...frequencyMap.entries()]
     .sort((first, second) => first[0] - second[0])
     .map(([value, count]) => ({ value, count }));
 }
 
-function buildUngroupedTableData(values) {
-  const frequencyItems = buildFrequencyItems(values);
+function buildUngroupedTableData(values, frequencyItems) {
   const totalCount = values.length;
   let cumulativeFrequency = 0;
 
@@ -71,17 +70,9 @@ function buildIntervalData(values) {
   });
 
   sortedValues.forEach((value) => {
-    const intervalIndex = intervals.findIndex((interval, index) => {
-      if (index === intervals.length - 1) {
-        return value >= interval.start && value <= interval.end;
-      }
-
-      return value >= interval.start && value < interval.end;
-    });
-
-    if (intervalIndex >= 0) {
-      intervals[intervalIndex].fi += 1;
-    }
+    const rawIndex = Math.floor((value - intervalMinValue) / classWidth);
+    const intervalIndex = Math.min(Math.max(rawIndex, 0), intervals.length - 1);
+    intervals[intervalIndex].fi += 1;
   });
 
   let cumulativeFrequency = 0;
@@ -110,7 +101,7 @@ export function normalizeInputData(rawInput) {
     return {
       values: null,
       inputSummary: "",
-      error: "Informe ao menos um nÃºmero antes de calcular.",
+      error: "Informe ao menos um número antes de calcular.",
     };
   }
 
@@ -124,15 +115,17 @@ export function normalizeInputData(rawInput) {
     return {
       values: null,
       inputSummary: "",
-      error: "Entrada invÃ¡lida. Use apenas nÃºmeros separados por vÃ­rgula.",
+      error: "Entrada inválida. Use apenas números separados por vírgula.",
     };
   }
+
+  const frequencyItems = buildFrequencyItems(values);
 
   return {
     values,
     inputSummary: rawInput,
-    frequencyItems: buildFrequencyItems(values),
-    ungroupedTableData: buildUngroupedTableData(values),
+    frequencyItems,
+    ungroupedTableData: buildUngroupedTableData(values, frequencyItems),
     intervalData: buildIntervalData(values),
     error: "",
   };

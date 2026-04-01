@@ -1,4 +1,4 @@
-ï»¿import { useState } from "react";
+import { useMemo, useState } from "react";
 import ResultPanel from "../components/ResultPanel";
 import StatsInputForm from "../components/StatsInputForm";
 import { exportStatisticsPdf } from "../services/pdfExport";
@@ -15,22 +15,23 @@ function HomePage() {
   const [processedData, setProcessedData] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const normalizedInput = useMemo(() => normalizeInputData(rawInput), [rawInput]);
 
   async function runCalculation(action) {
+    setIsLoading(true);
     setErrorMessage("");
     setSelectedAction(action);
 
     const { values, inputSummary, frequencyItems, intervalData, error } =
-      normalizeInputData(rawInput);
+      normalizedInput;
 
     if (error) {
       setResult(null);
       setProcessedData(null);
       setErrorMessage(error);
+      setIsLoading(false);
       return;
     }
-
-    setIsLoading(true);
 
     try {
       const payload = await calculateStatistics(values);
@@ -71,9 +72,10 @@ function HomePage() {
     <main className="page-shell">
       <section className="hero">
         <div className="hero-content">
-          <h1>Calculadora EstatÃ­stica 1.0</h1>
+          <h1>Calculadora Estatística 1.0</h1>
           <p className="hero-text">
-            Calcule mÃ©dia, mediana, moda, amplitude, desvio padrÃ£o populacional e visualize a tabela de frequÃªncia em um Ãºnico painel.
+            Calcule média, mediana, moda, amplitude, desvio padrão populacional e
+            visualize a tabela de frequência em um único painel.
           </p>
         </div>
       </section>
@@ -95,8 +97,12 @@ function HomePage() {
           <div className="output-header">
             <div className="section-header">
               <span className="section-tag">Resultado</span>
-              <h2>Resumo estatÃ­stico</h2>
-              <p>Digite os dados e escolha uma opÃ§Ã£o para ver os resultados.</p>
+              <h2>Resumo estatístico</h2>
+              <p>
+                {isLoading
+                  ? "Processando os dados e buscando as estatísticas. Isso pode levar alguns segundos."
+                  : "Digite os dados e escolha uma opção para ver os resultados."}
+              </p>
             </div>
 
             {selectedAction === "geral" && result ? (
@@ -110,7 +116,12 @@ function HomePage() {
             ) : null}
           </div>
 
-          {result ? (
+          {isLoading ? (
+            <div className="empty-state" aria-live="polite">
+              <p>Calculando seus resultados...</p>
+              <span>Aguarde enquanto finalizamos a análise estatística.</span>
+            </div>
+          ) : result ? (
             <ResultPanel
               selectedAction={selectedAction}
               selectedDataType={selectedDataType}
@@ -120,8 +131,11 @@ function HomePage() {
             />
           ) : (
             <div className="empty-state">
-              <p>Nenhum cÃ¡lculo realizado ainda.</p>
-              <span>Preencha os valores e use um dos botÃµes de aÃ§Ã£o para ver os resultados.</span>
+              <p>Nenhum cálculo realizado ainda.</p>
+              <span>
+                Preencha os valores e use um dos botões de ação para ver os
+                resultados.
+              </span>
             </div>
           )}
         </section>

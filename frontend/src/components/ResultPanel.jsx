@@ -1,4 +1,5 @@
-ï»¿import FrequencyTable from "./FrequencyTable";
+import { useMemo } from "react";
+import FrequencyTable from "./FrequencyTable";
 import ResultCard from "./ResultCard";
 import { getPanelContents } from "../utils/reportSections";
 
@@ -14,13 +15,23 @@ function ResultSection({ tag, title, children }) {
   );
 }
 
-function ResultPanel({ selectedAction, selectedDataType, values, result, processedData }) {
-  const contents = getPanelContents(
-    selectedAction,
-    selectedDataType,
-    values,
-    result,
-    processedData
+function ResultPanel({
+  selectedAction,
+  selectedDataType,
+  values,
+  result,
+  processedData,
+}) {
+  const contents = useMemo(
+    () =>
+      getPanelContents(
+        selectedAction,
+        selectedDataType,
+        values,
+        result,
+        processedData
+      ),
+    [selectedAction, selectedDataType, values, result, processedData]
   );
 
   if (!contents.length) {
@@ -31,11 +42,11 @@ function ResultPanel({ selectedAction, selectedDataType, values, result, process
     <div className="result-panel-content">
       {contents.map((content) => (
         <div key={content.title} className="result-group">
-          <ResultSection tag="FÃ³rmula" title={content.title}>
+          <ResultSection tag="Fórmula" title={content.title}>
             <p className="formula-text">{content.formula}</p>
           </ResultSection>
 
-          <ResultSection tag="CÃ¡lculo" title="CÃ¡lculo">
+          <ResultSection tag="Cálculo" title="Cálculo">
             <p className="calculation-expression">{content.calculation}</p>
             <ol className="calculation-steps">
               {content.steps.map((step) => (

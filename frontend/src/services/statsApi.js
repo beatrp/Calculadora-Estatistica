@@ -1,4 +1,5 @@
 import { API_BASE_URL } from "../config/api";
+import { apiClient } from "./apiClient";
 
 const STATS_API_URL = `${API_BASE_URL}/api/stats`;
 const DEFAULT_ERROR_MESSAGE =
@@ -6,7 +7,8 @@ const DEFAULT_ERROR_MESSAGE =
 
 export async function calculateStatistics(values) {
   try {
-    const response = await fetch(STATS_API_URL, {
+    const response = await apiClient(STATS_API_URL, {
+      attempts: 3,
       method: "POST",
       headers: {
         "Content-Type": "application/json",
