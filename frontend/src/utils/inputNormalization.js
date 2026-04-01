@@ -1,4 +1,4 @@
-function parseNumber(value) {
+﻿function parseNumber(value) {
   return Number(String(value).replace(",", "."));
 }
 
@@ -14,6 +14,31 @@ function buildFrequencyItems(values) {
     .map(([value, count]) => ({ value, count }));
 }
 
+function buildUngroupedTableData(values) {
+  const frequencyItems = buildFrequencyItems(values);
+  const totalCount = values.length;
+  let cumulativeFrequency = 0;
+
+  const classes = frequencyItems.map((item, index) => {
+    cumulativeFrequency += item.count;
+
+    return {
+      classe: index + 1,
+      limites: String(item.value),
+      fi: item.count,
+      xi: item.value,
+      fr: item.count / totalCount,
+      Fi: cumulativeFrequency,
+      Fr: cumulativeFrequency / totalCount,
+    };
+  });
+
+  return {
+    totalCount,
+    classes,
+  };
+}
+
 function buildIntervalData(values) {
   const sortedValues = [...values].sort((first, second) => first - second);
   const minValue = sortedValues[0];
@@ -21,18 +46,27 @@ function buildIntervalData(values) {
   const amplitude = maxValue - minValue;
   const totalCount = sortedValues.length;
   const classCount = Math.max(1, Math.round(1 + 3.3 * Math.log10(totalCount)));
-  const rawClassWidth = amplitude === 0 ? 1 : amplitude / classCount;
-  const classWidth = rawClassWidth === 0 ? 1 : rawClassWidth;
+  const intervalMinValue = Math.floor(minValue);
+  const classWidth = Math.max(
+    1,
+    Math.ceil((maxValue - intervalMinValue) / classCount)
+  );
 
   const intervals = Array.from({ length: classCount }, (_, index) => {
-    const start = minValue + index * classWidth;
-    const end = index === classCount - 1 ? maxValue : start + classWidth;
+    const start = intervalMinValue + index * classWidth;
+    const end = start + classWidth;
 
     return {
-      label: `${start.toFixed(2)} - ${end.toFixed(2)}`,
+      classe: index + 1,
+      label: `[${start} - ${end}]`,
+      limites: `${start} | ${end}`,
       start,
       end,
-      count: 0,
+      fi: 0,
+      xi: (start + end) / 2,
+      fr: 0,
+      Fi: 0,
+      Fr: 0,
     };
   });
 
@@ -46,8 +80,18 @@ function buildIntervalData(values) {
     });
 
     if (intervalIndex >= 0) {
-      intervals[intervalIndex].count += 1;
+      intervals[intervalIndex].fi += 1;
     }
+  });
+
+  let cumulativeFrequency = 0;
+
+  intervals.forEach((interval) => {
+    cumulativeFrequency += interval.fi;
+    interval.count = interval.fi;
+    interval.fr = interval.fi / totalCount;
+    interval.Fi = cumulativeFrequency;
+    interval.Fr = cumulativeFrequency / totalCount;
   });
 
   return {
@@ -88,6 +132,7 @@ export function normalizeInputData(rawInput) {
     values,
     inputSummary: rawInput,
     frequencyItems: buildFrequencyItems(values),
+    ungroupedTableData: buildUngroupedTableData(values),
     intervalData: buildIntervalData(values),
     error: "",
   };

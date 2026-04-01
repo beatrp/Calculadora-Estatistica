@@ -5,20 +5,26 @@
     return null;
   }
 
+  const normalizedItems = items.map((item) =>
+    Array.isArray(item) ? item : headers.map((header, index) => item[header] ?? item[index] ?? "")
+  );
+
   return (
     <div className="table-wrapper">
       <table className="frequency-table">
         <thead>
           <tr>
-            <th>{headers[0]}</th>
-            <th>{headers[1]}</th>
+            {headers.map((header) => (
+              <th key={header}>{header}</th>
+            ))}
           </tr>
         </thead>
         <tbody>
-          {items.map((item) => (
-            <tr key={`${item.first}-${item.second}`}>
-              <td>{item.first}</td>
-              <td>{item.second}</td>
+          {normalizedItems.map((item, rowIndex) => (
+            <tr key={`${item.join("-")}-${rowIndex}`}>
+              {item.map((value, cellIndex) => (
+                <td key={`${headers[cellIndex]}-${rowIndex}`}>{value}</td>
+              ))}
             </tr>
           ))}
         </tbody>

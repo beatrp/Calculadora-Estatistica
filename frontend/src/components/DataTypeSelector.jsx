@@ -1,4 +1,4 @@
-const DATA_TYPE_OPTIONS = [
+﻿const DATA_TYPE_OPTIONS = [
   { label: "Dados Não Agrupados", value: "nonGrouped" },
   { label: "Agrupados (Frequência automática)", value: "grouped" },
   { label: "Intervalo de Classe automático", value: "interval" },

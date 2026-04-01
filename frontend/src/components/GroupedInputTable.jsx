@@ -1,4 +1,4 @@
-function GroupedInputTable({ rows, onRowChange, onAddRow, onRemoveRow }) {
+﻿function GroupedInputTable({ rows, onRowChange, onAddRow, onRemoveRow }) {
   return (
     <div className="input-mode-card">
       <div className="input-mode-header">

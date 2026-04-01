@@ -1,4 +1,5 @@
 ﻿import { formatNumber } from "./formatters";
+import { gerarTabelaAgrupada } from "./gerarTabelaAgrupada";
 
 function buildMeanContent(values, result) {
   const sum = values.reduce((total, value) => total + value, 0);
@@ -117,11 +118,34 @@ function buildFrequencyTableContent(values, frequencyItems) {
       "Contamos quantas vezes cada valor aparece no conjunto informado.",
     ],
     finalResult: `Total de valores: ${values.length} | Valores distintos: ${frequencyItems.length}`,
-    tableItems: frequencyItems.map((item) => ({
-      first: formatNumber(item.value),
-      second: String(item.count),
-    })),
+    tableItems: frequencyItems.map((item) => [formatNumber(item.value), String(item.count)]),
     tableHeaders: ["Valor", "Frequência"],
+  };
+}
+
+function buildUngroupedTableContent(values, ungroupedTableData) {
+  const sortedValues = [...values].sort((first, second) => first - second);
+
+  return {
+    title: "Tabela de frequência",
+    formula: "Cada valor distinto forma uma classe: xi = valor, fi = frequência",
+    calculation: `Classes formadas a partir de ${ungroupedTableData.totalCount} observações não agrupadas`,
+    steps: [
+      `Dados ordenados: ${sortedValues.map(formatNumber).join(", ")}`,
+      "Cada valor distinto foi tratado como uma classe própria.",
+      "Calculamos fi, fr, Fi e Fr sobre as observações informadas.",
+    ],
+    finalResult: `Total de valores: ${ungroupedTableData.totalCount} | Classes: ${ungroupedTableData.classes.length}`,
+    tableItems: ungroupedTableData.classes.map((item) => [
+      String(item.classe),
+      formatNumber(item.limites),
+      String(item.fi),
+      formatNumber(item.xi),
+      formatNumber(item.fr),
+      String(item.Fi),
+      formatNumber(item.Fr),
+    ]),
+    tableHeaders: ["Classe", "Limites", "fi", "xi", "fr", "Fi", "Fr"],
   };
 }
 
@@ -134,9 +158,13 @@ function buildIntervalTableContent(intervalDetails) {
     `Amplitude = max - min = ${formatNumber(intervalDetails.maxValue)} - ${formatNumber(
       intervalDetails.minValue
     )} = ${formatNumber(intervalDetails.amplitude)}`,
-    `Largura da classe = ${formatNumber(intervalDetails.amplitude)} / ${roundedClassCount} ~= ${formatNumber(
-      intervalDetails.classWidth
+    `Limite inferior inicial = floor(${formatNumber(intervalDetails.minValue)}) = ${formatNumber(
+      Math.floor(intervalDetails.minValue)
     )}`,
+    `Largura da classe = ceil((${formatNumber(intervalDetails.maxValue)} - ${formatNumber(
+      Math.floor(intervalDetails.minValue)
+    )}) / ${roundedClassCount}) = ${formatNumber(intervalDetails.classWidth)}`,
+    "As classes usam limites inteiros, e a última classe inclui o limite superior.",
   ];
 
   return {
@@ -147,15 +175,35 @@ function buildIntervalTableContent(intervalDetails) {
     finalResult: `n = ${intervalDetails.totalCount} | k = ${intervalDetails.classCount} | amplitude = ${formatNumber(
       intervalDetails.amplitude
     )} | largura = ${formatNumber(intervalDetails.classWidth)}`,
-    tableItems: intervalDetails.intervals.map((interval) => ({
-      first: interval.label,
-      second: String(interval.count),
-    })),
-    tableHeaders: ["Intervalo", "Frequência"],
+    tableItems: intervalDetails.intervals.map((interval) => [
+      String(interval.classe),
+      interval.label,
+      String(interval.fi),
+      formatNumber(interval.xi),
+      formatNumber(interval.fr),
+      String(interval.Fi),
+      formatNumber(interval.Fr),
+    ]),
+    tableHeaders: ["Classe", "Limites", "fi", "xi", "fr", "Fi", "Fr"],
   };
 }
 
-function buildTableContent(values, frequencyItems, intervalDetails, selectedDataType) {
+function buildTableContent(
+  values,
+  frequencyItems,
+  ungroupedTableData,
+  intervalDetails,
+  selectedDataType
+) {
+  if (selectedDataType === "nonGrouped") {
+    return buildUngroupedTableContent(values, ungroupedTableData);
+  }
+
+  if (selectedDataType === "grouped") {
+    const numClasses = Math.max(1, Math.round(1 + 3.3 * Math.log10(values.length)));
+    return gerarTabelaAgrupada(values, numClasses);
+  }
+
   if (selectedDataType === "interval") {
     return buildIntervalTableContent(intervalDetails);
   }
@@ -174,6 +222,7 @@ function getPanelBuilders(values, result, processedData, selectedDataType) {
       buildTableContent(
         values,
         processedData.frequencyItems,
+        processedData.ungroupedTableData,
         processedData.intervalData,
         selectedDataType
       ),

@@ -1,4 +1,4 @@
-import ActionButtons from "./ActionButtons";
+﻿import ActionButtons from "./ActionButtons";
 import DataTypeSelector from "./DataTypeSelector";
 import NonGroupedInput from "./NonGroupedInput";
 
@@ -18,7 +18,7 @@ function StatsInputForm({
       <div className="section-header">
         <span className="section-tag">Entrada</span>
         <h2>Insira os dados</h2>
-        <p>Informe os dados uma vez e escolha como deseja organizar a analise.</p>
+        <p>Informe os dados uma vez e escolha como deseja organizar a análise.</p>
       </div>
 
       <form onSubmit={onSubmit} className="stats-form">

@@ -1,4 +1,4 @@
-function IntervalInputTable({ rows, onRowChange, onAddRow, onRemoveRow }) {
+﻿function IntervalInputTable({ rows, onRowChange, onAddRow, onRemoveRow }) {
   return (
     <div className="input-mode-card">
       <div className="input-mode-header">

@@ -1,4 +1,4 @@
-import FrequencyTable from "./FrequencyTable";
+﻿import FrequencyTable from "./FrequencyTable";
 import ResultCard from "./ResultCard";
 import { getPanelContents } from "../utils/reportSections";
 

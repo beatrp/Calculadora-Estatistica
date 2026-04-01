@@ -1,4 +1,4 @@
-function NonGroupedInput({ rawInput, onInputChange }) {
+﻿function NonGroupedInput({ rawInput, onInputChange }) {
   return (
     <div className="input-mode-card">
       <label htmlFor="numbers" className="label">

@@ -71,7 +71,7 @@ function HomePage() {
     <main className="page-shell">
       <section className="hero">
         <div className="hero-content">
-          <h1>Calculadora Estatística - Grupo Crises</h1>
+          <h1>Calculadora Estatística 1.0</h1>
           <p className="hero-text">
             Calcule média, mediana, moda, amplitude, desvio padrão populacional e visualize a tabela de frequência em um único painel.
           </p>
