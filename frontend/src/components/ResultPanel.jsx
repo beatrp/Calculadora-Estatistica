@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import FrequencyTable from "./FrequencyTable";
+import InfoTooltip from "./InfoTooltip";
 import ResultCard from "./ResultCard";
 import { getPanelContents } from "../utils/reportSections";
 
@@ -58,7 +59,13 @@ function ResultPanel({
           <ResultSection tag="Resultado Final" title={content.title}>
             {content.tableItems ? (
               <>
-                <p className="final-summary">{content.finalResult}</p>
+                <div className="result-table-header">
+                  <p className="final-summary">{content.finalResult}</p>
+                  <div className="result-table-title">
+                    <span className="result-table-title-text">{content.title}</span>
+                    <InfoTooltip />
+                  </div>
+                </div>
                 <FrequencyTable
                   selectedAction={selectedAction}
                   items={content.tableItems}
