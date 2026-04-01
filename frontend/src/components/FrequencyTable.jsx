@@ -6,7 +6,9 @@
   }
 
   const normalizedItems = items.map((item) =>
-    Array.isArray(item) ? item : headers.map((header, index) => item[header] ?? item[index] ?? "")
+    Array.isArray(item)
+      ? item.map((value) => value ?? "-")
+      : headers.map((header, index) => item[header] ?? item[index] ?? "-")
   );
 
   return (
@@ -23,7 +25,7 @@
           {normalizedItems.map((item, rowIndex) => (
             <tr key={`${item.join("-")}-${rowIndex}`}>
               {item.map((value, cellIndex) => (
-                <td key={`${headers[cellIndex]}-${rowIndex}`}>{value}</td>
+                <td key={`${headers[cellIndex]}-${rowIndex}`}>{value ?? "-"}</td>
               ))}
             </tr>
           ))}

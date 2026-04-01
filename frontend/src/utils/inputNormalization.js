@@ -14,11 +14,11 @@ function buildFrequencyItems(values) {
     .map(([value, count]) => ({ value, count }));
 }
 
-function buildUngroupedTableData(values, frequencyItems) {
+function gerarTabelaNaoAgrupada(values, frequencyItems) {
   const totalCount = values.length;
   let cumulativeFrequency = 0;
 
-  const classes = frequencyItems.map((item, index) => {
+  return frequencyItems.map((item, index) => {
     cumulativeFrequency += item.count;
 
     return {
@@ -31,11 +31,6 @@ function buildUngroupedTableData(values, frequencyItems) {
       Fr: cumulativeFrequency / totalCount,
     };
   });
-
-  return {
-    totalCount,
-    classes,
-  };
 }
 
 function buildIntervalData(values) {
@@ -125,8 +120,9 @@ export function normalizeInputData(rawInput) {
     values,
     inputSummary: rawInput,
     frequencyItems,
-    ungroupedTableData: buildUngroupedTableData(values, frequencyItems),
+    ungroupedTableData: gerarTabelaNaoAgrupada(values, frequencyItems),
     intervalData: buildIntervalData(values),
     error: "",
   };
 }
+

@@ -34,7 +34,7 @@ function ResultPanel({
     [selectedAction, selectedDataType, values, result, processedData]
   );
 
-  if (!contents.length) {
+  if (!contents || contents.length === 0) {
     return null;
   }
 
@@ -42,15 +42,15 @@ function ResultPanel({
     <div className="result-panel-content">
       {contents.map((content) => (
         <div key={content.title} className="result-group">
-          <ResultSection tag="Fórmula" title={content.title}>
+          <ResultSection tag="FÃ³rmula" title={content.title}>
             <p className="formula-text">{content.formula}</p>
           </ResultSection>
 
-          <ResultSection tag="Cálculo" title="Cálculo">
+          <ResultSection tag="CÃ¡lculo" title="CÃ¡lculo">
             <p className="calculation-expression">{content.calculation}</p>
             <ol className="calculation-steps">
-              {content.steps.map((step) => (
-                <li key={step}>{step}</li>
+              {content.steps.map((step, index) => (
+                <li key={index}>{step}</li>
               ))}
             </ol>
           </ResultSection>
@@ -67,7 +67,10 @@ function ResultPanel({
               </>
             ) : (
               <div className="results-grid">
-                <ResultCard label={content.title} value={content.finalResult} />
+                <ResultCard
+                  label={content.title}
+                  value={content.finalResult}
+                />
               </div>
             )}
           </ResultSection>

@@ -1,4 +1,4 @@
-﻿import { formatNumber } from "./formatters";
+import { formatNumber } from "./formatters";
 import { gerarTabelaAgrupada } from "./gerarTabelaAgrupada";
 
 function buildMeanContent(values, result) {
@@ -20,7 +20,7 @@ function buildMeanContent(values, result) {
 }
 
 function buildMedianContent(values, result) {
-  const sortedValues = [...values].sort((first, second) => first - second);
+  const sortedValues = [...values].sort((a, b) => a - b);
   const middleIndex = Math.floor(sortedValues.length / 2);
   const isEven = sortedValues.length % 2 === 0;
   const middleValues = isEven
@@ -47,142 +47,140 @@ function buildMedianContent(values, result) {
 }
 
 function buildModeContent(result) {
-  const highestFrequency = Math.max(...result.frequency.map((item) => item.count));
-  const modalItems = result.frequency.filter((item) => item.count === highestFrequency);
+  const highestFrequency = Math.max(...result.frequency.map((i) => i.count));
+  const modalItems = result.frequency.filter((i) => i.count === highestFrequency);
 
   return {
     title: "Moda",
     formula: "Mo = valor(es) com maior frequência",
-    calculation: `${modalItems.map((item) => formatNumber(item.value)).join(", ")} possuem frequência ${highestFrequency}`,
+    calculation: `${modalItems.map((i) => formatNumber(i.value)).join(", ")} possuem frequência ${highestFrequency}`,
     steps: [
       `Frequências observadas: ${result.frequency
-        .map((item) => `${formatNumber(item.value)} aparece ${item.count}x`)
+        .map((i) => `${formatNumber(i.value)} aparece ${i.count}x`)
         .join("; ")}`,
       `Maior frequência encontrada: ${highestFrequency}`,
-      `Valor(es) modal(is): ${modalItems.map((item) => formatNumber(item.value)).join(", ")}`,
+      `Valor(es) modal(is): ${modalItems.map((i) => formatNumber(i.value)).join(", ")}`,
     ],
     finalResult: result.mode.map(formatNumber).join(", "),
   };
 }
 
 function buildAmplitudeContent(values, result) {
-  const minValue = Math.min(...values);
-  const maxValue = Math.max(...values);
+  const min = Math.min(...values);
+  const max = Math.max(...values);
 
   return {
     title: "Amplitude",
     formula: "A = xmax - xmin",
-    calculation: `${formatNumber(maxValue)} - ${formatNumber(minValue)}`,
+    calculation: `${formatNumber(max)} - ${formatNumber(min)}`,
     steps: [
-      `Menor valor: ${formatNumber(minValue)}`,
-      `Maior valor: ${formatNumber(maxValue)}`,
-      `Amplitude: ${formatNumber(maxValue)} - ${formatNumber(minValue)} = ${formatNumber(result.amplitude)}`,
+      `Menor valor: ${formatNumber(min)}`,
+      `Maior valor: ${formatNumber(max)}`,
+      `Amplitude: ${formatNumber(max)} - ${formatNumber(min)} = ${formatNumber(result.amplitude)}`,
     ],
     finalResult: formatNumber(result.amplitude),
   };
 }
 
 function buildStdDevContent(values, result) {
-  const squaredDiffs = values.map((value) => (value - result.mean) ** 2);
-  const variance = squaredDiffs.reduce((total, value) => total + value, 0) / values.length;
-  const squaredTerms = values.map(
-    (value, index) =>
-      `(${formatNumber(value)} - ${formatNumber(result.mean)})^2 = ${formatNumber(
-        squaredDiffs[index]
+  const squaredDiffs = values.map((v) => (v - result.mean) ** 2);
+  const variance =
+    squaredDiffs.reduce((t, v) => t + v, 0) / values.length;
+
+  const terms = values.map(
+    (v, i) =>
+      `(${formatNumber(v)} - ${formatNumber(result.mean)})² = ${formatNumber(
+        squaredDiffs[i]
       )}`
   );
 
   return {
     title: "Desvio Padrão",
-    formula: "sigma = sqrt(sum((x - media)^2) / n)",
-    calculation: `sqrt(${formatNumber(variance)})`,
+    formula: "σ = √(Σ(x - média)² / n)",
+    calculation: `√(${formatNumber(variance)})`,
     steps: [
       `Média utilizada: ${formatNumber(result.mean)}`,
-      `Desvios ao quadrado: ${squaredTerms.join("; ")}`,
+      `Desvios ao quadrado: ${terms.join("; ")}`,
       `Variância populacional: ${formatNumber(variance)}`,
-      `Desvio padrão: sqrt(${formatNumber(variance)}) = ${formatNumber(result.stdDev)}`,
+      `Desvio padrão: √(${formatNumber(variance)}) = ${formatNumber(result.stdDev)}`,
     ],
     finalResult: formatNumber(result.stdDev),
   };
 }
 
 function buildFrequencyTableContent(values, frequencyItems) {
-  const sortedValues = [...values].sort((first, second) => first - second);
+  const sorted = [...values].sort((a, b) => a - b);
 
   return {
     title: "Tabela de frequência",
-    formula: "fi = frequência absoluta de cada valor",
-    calculation: `Contagem dos valores distintos em ${values.length} observações`,
+    formula: "fi = frequência absoluta",
+    calculation: `Contagem em ${values.length} observações`,
     steps: [
-      `Dados ordenados: ${sortedValues.map(formatNumber).join(", ")}`,
-      "Contamos quantas vezes cada valor aparece no conjunto informado.",
+      `Dados ordenados: ${sorted.map(formatNumber).join(", ")}`,
+      "Contamos quantas vezes cada valor aparece.",
     ],
-    finalResult: `Total de valores: ${values.length} | Valores distintos: ${frequencyItems.length}`,
-    tableItems: frequencyItems.map((item) => [formatNumber(item.value), String(item.count)]),
+    finalResult: `Total: ${values.length} | Distintos: ${frequencyItems.length}`,
+    tableItems: frequencyItems.map((i) => [
+      formatNumber(i.value),
+      String(i.count),
+    ]),
     tableHeaders: ["Valor", "Frequência"],
   };
 }
 
-function buildUngroupedTableContent(values, ungroupedTableData) {
-  const sortedValues = [...values].sort((first, second) => first - second);
+function buildUngroupedTableContent(values, data) {
+  if (!data || data.length === 0) {
+    return {
+      title: "Tabela de frequência",
+      formula: "Cada valor distinto forma uma classe",
+      calculation: "Nenhuma observação disponível",
+      steps: ["Sem dados para exibir"],
+      finalResult: "Total: 0 | Classes: 0",
+      tableItems: [],
+      tableHeaders: ["Classe", "Limites", "fi", "xi", "fr", "Fi", "Fr"],
+    };
+  }
+
+  const sorted = [...values].sort((a, b) => a - b);
 
   return {
     title: "Tabela de frequência",
-    formula: "Cada valor distinto forma uma classe: xi = valor, fi = frequência",
-    calculation: `Classes formadas a partir de ${ungroupedTableData.totalCount} observações não agrupadas`,
+    formula: "xi = valor, fi = frequência",
+    calculation: `Classes formadas a partir de ${values.length} observações`,
     steps: [
-      `Dados ordenados: ${sortedValues.map(formatNumber).join(", ")}`,
-      "Cada valor distinto foi tratado como uma classe própria.",
-      "Calculamos fi, fr, Fi e Fr sobre as observações informadas.",
+      `Dados ordenados: ${sorted.map(formatNumber).join(", ")}`,
+      "Cada valor distinto foi tratado como uma classe.",
+      "Calculamos fi, fr, Fi e Fr.",
     ],
-    finalResult: `Total de valores: ${ungroupedTableData.totalCount} | Classes: ${ungroupedTableData.classes.length}`,
-    tableItems: ungroupedTableData.classes.map((item) => [
-      String(item.classe),
-      formatNumber(item.limites),
-      String(item.fi),
-      formatNumber(item.xi),
-      formatNumber(item.fr),
-      String(item.Fi),
-      formatNumber(item.Fr),
+    finalResult: `Total: ${values.length} | Classes: ${data.length}`,
+    tableItems: data.map((i) => [
+      String(i.classe),
+      formatNumber(i.limites),
+      String(i.fi),
+      formatNumber(i.xi),
+      formatNumber(i.fr),
+      String(i.Fi),
+      formatNumber(i.Fr),
     ]),
     tableHeaders: ["Classe", "Limites", "fi", "xi", "fr", "Fi", "Fr"],
   };
 }
 
 function buildIntervalTableContent(intervalDetails) {
-  const roundedClassCount = formatNumber(intervalDetails.classCount);
-  const explanation = [
-    "Usando a fórmula de Sturges:",
-    "k = 1 + 3.3 * log10(n)",
-    `n = ${intervalDetails.totalCount} -> k ~= ${roundedClassCount}`,
-    `Amplitude = max - min = ${formatNumber(intervalDetails.maxValue)} - ${formatNumber(
-      intervalDetails.minValue
-    )} = ${formatNumber(intervalDetails.amplitude)}`,
-    `Limite inferior inicial = floor(${formatNumber(intervalDetails.minValue)}) = ${formatNumber(
-      Math.floor(intervalDetails.minValue)
-    )}`,
-    `Largura da classe = ceil((${formatNumber(intervalDetails.maxValue)} - ${formatNumber(
-      Math.floor(intervalDetails.minValue)
-    )}) / ${roundedClassCount}) = ${formatNumber(intervalDetails.classWidth)}`,
-    "As classes usam limites inteiros, e a última classe inclui o limite superior.",
-  ];
-
   return {
     title: "Intervalo de Classe",
-    formula: "k = 1 + 3.3 * log10(n)",
-    calculation: `k = ${roundedClassCount}, h = ${formatNumber(intervalDetails.classWidth)}`,
-    steps: explanation,
-    finalResult: `n = ${intervalDetails.totalCount} | k = ${intervalDetails.classCount} | amplitude = ${formatNumber(
-      intervalDetails.amplitude
-    )} | largura = ${formatNumber(intervalDetails.classWidth)}`,
-    tableItems: intervalDetails.intervals.map((interval) => [
-      String(interval.classe),
-      interval.label,
-      String(interval.fi),
-      formatNumber(interval.xi),
-      formatNumber(interval.fr),
-      String(interval.Fi),
-      formatNumber(interval.Fr),
+    formula: "k = 1 + 3.3 log10(n)",
+    calculation: `k = ${intervalDetails.classCount}`,
+    steps: ["Cálculo baseado na fórmula de Sturges"],
+    finalResult: `k = ${intervalDetails.classCount}`,
+    tableItems: intervalDetails.intervals.map((i) => [
+      String(i.classe),
+      i.label,
+      String(i.fi),
+      formatNumber(i.xi),
+      formatNumber(i.fr),
+      String(i.Fi),
+      formatNumber(i.Fr),
     ]),
     tableHeaders: ["Classe", "Limites", "fi", "xi", "fr", "Fi", "Fr"],
   };
@@ -200,8 +198,8 @@ function buildTableContent(
   }
 
   if (selectedDataType === "grouped") {
-    const numClasses = Math.max(1, Math.round(1 + 3.3 * Math.log10(values.length)));
-    return gerarTabelaAgrupada(values, numClasses);
+    const k = Math.max(1, Math.round(1 + 3.3 * Math.log10(values.length)));
+    return gerarTabelaAgrupada(values, k);
   }
 
   if (selectedDataType === "interval") {
@@ -211,8 +209,16 @@ function buildTableContent(
   return buildFrequencyTableContent(values, frequencyItems);
 }
 
-function getPanelBuilders(values, result, processedData, selectedDataType) {
-  return {
+export function getPanelContents(
+  selectedAction,
+  selectedDataType,
+  values,
+  result,
+  processedData
+) {
+  if (!result || !processedData) return [];
+
+  const builders = {
     Media: () => buildMeanContent(values, result),
     Mediana: () => buildMedianContent(values, result),
     Moda: () => buildModeContent(result),
@@ -227,26 +233,18 @@ function getPanelBuilders(values, result, processedData, selectedDataType) {
         selectedDataType
       ),
   };
-}
-
-export function getPanelContents(selectedAction, selectedDataType, values, result, processedData) {
-  if (!result || !processedData) {
-    return [];
-  }
-
-  const panelBuilders = getPanelBuilders(values, result, processedData, selectedDataType);
 
   if (selectedAction === "geral") {
     return [
-      panelBuilders.Media(),
-      panelBuilders.Mediana(),
-      panelBuilders.Moda(),
-      panelBuilders.Amplitude(),
-      panelBuilders["Desvio Padrao"](),
-      panelBuilders.Tabela(),
+      builders.Media(),
+      builders.Mediana(),
+      builders.Moda(),
+      builders.Amplitude(),
+      builders["Desvio Padrao"](),
+      builders.Tabela(),
     ];
   }
 
-  const content = panelBuilders[selectedAction]?.();
+  const content = builders[selectedAction]?.();
   return content ? [content] : [];
 }
