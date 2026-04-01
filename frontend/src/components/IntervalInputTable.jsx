@@ -3,7 +3,7 @@
     <div className="input-mode-card">
       <div className="input-mode-header">
         <div>
-          <label className="label">Dados por intervalo de classe</label>
+          <label className="label">Dados Agrupados COM intervalo de classe</label>
           <p className="input-helper">
             Informe o intervalo e a frequência. Ex: 0-10 com frequência 4.
           </p>

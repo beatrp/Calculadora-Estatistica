@@ -3,7 +3,7 @@
     <div className="input-mode-card">
       <div className="input-mode-header">
         <div>
-          <label className="label">Dados agrupados por frequência</label>
+          <label className="label">Dados Agrupados SEM intervalo de classe</label>
           <p className="input-helper">
             Informe o valor e quantas vezes ele aparece. Ex: valor 10 com frequência 3.
           </p>

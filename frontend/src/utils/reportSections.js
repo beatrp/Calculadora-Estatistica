@@ -1,5 +1,4 @@
 import { formatNumber } from "./formatters";
-import { gerarTabelaAgrupada } from "./gerarTabelaAgrupada";
 
 function buildMeanContent(values, result) {
   const sum = values.reduce((total, value) => total + value, 0);
@@ -198,8 +197,7 @@ function buildTableContent(
   }
 
   if (selectedDataType === "grouped") {
-    const k = Math.max(1, Math.round(1 + 3.3 * Math.log10(values.length)));
-    return gerarTabelaAgrupada(values, k);
+    return buildUngroupedTableContent(values, ungroupedTableData);
   }
 
   if (selectedDataType === "interval") {

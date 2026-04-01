@@ -2,8 +2,8 @@
 import ResultPanel from "../components/ResultPanel";
 import StatsInputForm from "../components/StatsInputForm";
 import { exportStatisticsPdf } from "../services/pdfExport";
-import { calculateStatistics } from "../services/statsApi";
 import { normalizeInputData } from "../utils/inputNormalization";
+import { calculateStatistics } from "../utils/statistics";
 
 function HomePage() {
   const [selectedDataType, setSelectedDataType] = useState("nonGrouped");
@@ -14,11 +14,9 @@ function HomePage() {
   const [calculatedInputSummary, setCalculatedInputSummary] = useState("");
   const [processedData, setProcessedData] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const normalizedInput = useMemo(() => normalizeInputData(rawInput), [rawInput]);
 
-  async function runCalculation(action) {
-    setIsLoading(true);
+  function runCalculation(action) {
     setErrorMessage("");
     setSelectedAction(action);
 
@@ -35,12 +33,11 @@ function HomePage() {
       setResult(null);
       setProcessedData(null);
       setErrorMessage(error);
-      setIsLoading(false);
       return;
     }
 
     try {
-      const payload = await calculateStatistics(values);
+      const payload = calculateStatistics(values);
       setCalculatedValues(values);
       setCalculatedInputSummary(inputSummary);
       setProcessedData({
@@ -55,8 +52,6 @@ function HomePage() {
       setCalculatedInputSummary("");
       setProcessedData(null);
       setErrorMessage(error.message);
-    } finally {
-      setIsLoading(false);
     }
   }
 
@@ -96,7 +91,7 @@ function HomePage() {
           onSubmit={handleSubmit}
           selectedAction={selectedAction}
           onActionTrigger={runCalculation}
-          isLoading={isLoading}
+          isLoading={false}
           errorMessage={errorMessage}
         />
 
@@ -105,11 +100,7 @@ function HomePage() {
             <div className="section-header">
               <span className="section-tag">Resultado</span>
               <h2>Resumo estatístico</h2>
-              <p>
-                {isLoading
-                  ? "Processando os dados e buscando as estatísticas. Isso pode levar alguns segundos."
-                  : "Digite os dados e escolha uma opção para ver os resultados."}
-              </p>
+              <p>Digite os dados e escolha uma opção para ver os resultados.</p>
             </div>
 
             {selectedAction === "geral" && result ? (
@@ -123,12 +114,7 @@ function HomePage() {
             ) : null}
           </div>
 
-          {isLoading ? (
-            <div className="empty-state" aria-live="polite">
-              <p>Calculando seus resultados...</p>
-              <span>Aguarde enquanto finalizamos a análise estatística..</span>
-            </div>
-          ) : result ? (
+          {result ? (
             <ResultPanel
               selectedAction={selectedAction}
               selectedDataType={selectedDataType}
@@ -140,7 +126,7 @@ function HomePage() {
             <div className="empty-state">
               <p>Nenhum cálculo realizado ainda.</p>
               <span>
-                Preencha os valores e use um dos  botões de ação para ver os
+                Preencha os valores e use um dos botões de ação para ver os
                 resultados.
               </span>
             </div>
@@ -152,4 +138,3 @@ function HomePage() {
 }
 
 export default HomePage;
-
