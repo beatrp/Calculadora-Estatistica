@@ -62,6 +62,20 @@ textarea {
   box-sizing: border-box;
 }
 
+.hero-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.hero-logo {
+  width: clamp(64px, 10vw, 90px);
+  height: auto;
+  flex-shrink: 0;
+}
+
 .hero-badge,
 .section-tag {
   display: inline-flex;
@@ -613,6 +627,45 @@ textarea {
   letter-spacing: -0.02em;
 }
 
+.app-footer {
+  margin-top: 40px;
+  padding: 16px 4px 0;
+  border-top: 1px solid var(--line);
+}
+
+.app-footer__content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.app-footer__text {
+  margin: 0;
+}
+
+.app-footer__github {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--primary-dark);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.app-footer__github:hover,
+.app-footer__github:focus-visible {
+  color: var(--primary);
+}
+
+.app-footer__github-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
 @media (max-width: 900px) {
   .content-grid {
     grid-template-columns: 1fr;
@@ -629,12 +682,26 @@ textarea {
   .input-mode-header {
     flex-direction: column;
   }
+
+  .app-footer__content {
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+  }
 }
 
 @media (max-width: 640px) {
   .page-shell {
     width: min(100% - 20px, 100%);
     padding-top: 24px;
+  }
+
+  .hero-title-row {
+    gap: 12px;
+  }
+
+  .hero-logo {
+    width: 60px;
   }
 
   .panel {

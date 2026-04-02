@@ -1,6 +1,8 @@
 ﻿import { useMemo, useState } from "react";
+import Footer from "../components/Footer";
 import ResultPanel from "../components/ResultPanel";
 import StatsInputForm from "../components/StatsInputForm";
+import logo from "../assets/images/logo.svg";
 import { exportStatisticsPdf } from "../services/pdfExport";
 import { normalizeInputData } from "../utils/inputNormalization";
 import { calculateStatistics } from "../utils/statistics";
@@ -74,7 +76,16 @@ function HomePage() {
     <main className="page-shell">
       <section className="hero">
         <div className="hero-content">
-          <h1>Calculadora Estatística 1.0</h1>
+          <div className="hero-title-row">
+            <img
+              src={logo}
+              alt="Grupo Crises Logo"
+              className="hero-logo"
+              width="90"
+              height="90"
+            />
+            <h1>Calculadora Estatística 1.0 - Grupo Crises</h1>
+          </div>
           <p className="hero-text">
             Calcule média, mediana, moda, amplitude, desvio padrão populacional e
             visualize a tabela de frequência em um único painel.
@@ -133,6 +144,7 @@ function HomePage() {
           )}
         </section>
       </section>
+      <Footer />
     </main>
   );
 }
