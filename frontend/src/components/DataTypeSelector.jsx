@@ -1,7 +1,7 @@
 ﻿const DATA_TYPE_OPTIONS = [
   { label: "Dados Não Agrupados", value: "nonGrouped" },
-  { label: "Dados Agrupados SEM intervalo de classe", value: "grouped" },
-  { label: "Dados Agrupados COM intervalo de classe", value: "interval" },
+  { label: "Dados Agrupados s/ intervalo", value: "grouped" },
+  { label: "Dados Agrupados c/ intervalo", value: "interval" },
 ];
 
 function DataTypeSelector({ selectedDataType, onDataTypeChange }) {
