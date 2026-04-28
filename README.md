@@ -1,6 +1,10 @@
-https://drive.google.com/drive/folders/1rQc0rlq-yRigfmrFYsx6JvYJ6flRw-MA
-
 # Calculadora Estatistica - Grupo X v1.0
+
+## Acesse o site
+[https://seusite.com](https://calculadora-estatistica.vercel.app/)
+
+## Proposta p1
+https://drive.google.com/drive/folders/1rQc0rlq-yRigfmrFYsx6JvYJ6flRw-MA
 
 Aplicacao full stack com frontend em React e backend em Spring Boot para calcular estatisticas descritivas a partir de uma lista de numeros.
 
