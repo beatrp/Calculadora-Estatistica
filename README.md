@@ -1,4 +1,4 @@
-# Calculadora Estatistica - Grupo X v1.0
+# Calculadora Estatistica - Grupo 3 Crises
 
 ## Acesse o site
 [https://abracalculadora.com](https://calculadora-estatistica.vercel.app/)
