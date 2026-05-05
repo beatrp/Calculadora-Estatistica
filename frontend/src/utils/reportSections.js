@@ -69,7 +69,7 @@ function buildAmplitudeContent(values, result) {
   const max = Math.max(...values);
 
   return {
-    title: "Amplitude",
+    title: "Amplitude Total",
     formula: "A = xmax - xmin",
     calculation: `${formatNumber(max)} - ${formatNumber(min)}`,
     steps: [
@@ -83,8 +83,7 @@ function buildAmplitudeContent(values, result) {
 
 function buildStdDevContent(values, result) {
   const squaredDiffs = values.map((v) => (v - result.mean) ** 2);
-  const variance =
-    squaredDiffs.reduce((t, v) => t + v, 0) / values.length;
+  const variance = squaredDiffs.reduce((t, v) => t + v, 0) / values.length;
 
   const terms = values.map(
     (v, i) =>
@@ -94,7 +93,7 @@ function buildStdDevContent(values, result) {
   );
 
   return {
-    title: "Desvio Padrão",
+    title: "Desvio Padrão Populacional",
     formula: "σ = √(Σ(x - média)² / n)",
     calculation: `√(${formatNumber(variance)})`,
     steps: [
@@ -130,7 +129,7 @@ function buildFrequencyTableContent(values, frequencyItems) {
 function buildUngroupedTableContent(values, data) {
   if (!data || data.length === 0) {
     return {
-      title: "Tabela de frequência",
+      title: "Tabela de Frequência - Dados Não Agrupados",
       formula: "Cada valor distinto forma uma classe",
       calculation: "Nenhuma observação disponível",
       steps: ["Sem dados para exibir"],
@@ -143,7 +142,7 @@ function buildUngroupedTableContent(values, data) {
   const sorted = [...values].sort((a, b) => a - b);
 
   return {
-    title: "Tabela de frequência",
+    title: "Tabela de Frequência - Dados Não Agrupados",
     formula: "xi = valor, fi = frequência",
     calculation: `Classes formadas a partir de ${values.length} observações`,
     steps: [
@@ -167,7 +166,7 @@ function buildUngroupedTableContent(values, data) {
 
 function buildIntervalTableContent(intervalDetails) {
   return {
-    title: "Intervalo de Classe",
+    title: "Tabela de Frequência com Intervalos de Classe",
     formula: "k = 1 + 3.3 log10(n)",
     calculation: `k = ${intervalDetails.classCount}`,
     steps: ["Cálculo baseado na fórmula de Sturges"],
@@ -197,7 +196,7 @@ function buildTableContent(
   }
 
   if (selectedDataType === "grouped") {
-    return buildUngroupedTableContent(values, ungroupedTableData);
+    return null;
   }
 
   if (selectedDataType === "interval") {
@@ -233,14 +232,21 @@ export function getPanelContents(
   };
 
   if (selectedAction === "geral") {
-    return [
+    const resultSections = [
       builders.Media(),
       builders.Mediana(),
       builders.Moda(),
       builders.Amplitude(),
       builders["Desvio Padrao"](),
-      builders.Tabela(),
     ];
+
+    const tableSection = builders.Tabela();
+
+    if (tableSection) {
+      return [tableSection, ...resultSections];
+    }
+
+    return resultSections;
   }
 
   const content = builders[selectedAction]?.();

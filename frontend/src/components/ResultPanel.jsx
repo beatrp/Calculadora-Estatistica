@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import CalculationExplanation from "./CalculationExplanation";
 import FrequencyTable from "./FrequencyTable";
 import InfoTooltip from "./InfoTooltip";
 import ResultCard from "./ResultCard";
@@ -39,50 +40,43 @@ function ResultPanel({
     return null;
   }
 
+  const tableContent = contents.find((content) => content.tableItems);
+  const resultContents = contents.filter((content) => !content.tableItems);
+
   return (
     <div className="result-panel-content">
-      {contents.map((content) => (
-        <div key={content.title} className="result-group">
-          <ResultSection tag="Fórmula" title={content.title}>
-            <p className="formula-text">{content.formula}</p>
-          </ResultSection>
+      {tableContent ? (
+        <ResultSection tag="Tabela" title={tableContent.title}>
+          <div className="result-table-header">
+            <p className="final-summary">{tableContent.finalResult}</p>
+            <div className="result-table-title">
+              <span className="result-table-title-text">{tableContent.title}</span>
+              <InfoTooltip />
+            </div>
+          </div>
+          <FrequencyTable
+            selectedAction={selectedAction}
+            items={tableContent.tableItems}
+            headers={tableContent.tableHeaders}
+          />
+        </ResultSection>
+      ) : null}
 
-          <ResultSection tag="Cálculo" title="Cálculo">
-            <p className="calculation-expression">{content.calculation}</p>
-            <ol className="calculation-steps">
-              {content.steps.map((step, index) => (
-                <li key={index}>{step}</li>
-              ))}
-            </ol>
-          </ResultSection>
-
-          <ResultSection tag="Resultado Final" title={content.title}>
-            {content.tableItems ? (
-              <>
-                <div className="result-table-header">
-                  <p className="final-summary">{content.finalResult}</p>
-                  <div className="result-table-title">
-                    <span className="result-table-title-text">{content.title}</span>
-                    <InfoTooltip />
-                  </div>
-                </div>
-                <FrequencyTable
-                  selectedAction={selectedAction}
-                  items={content.tableItems}
-                  headers={content.tableHeaders}
-                />
-              </>
-            ) : (
-              <div className="results-grid">
-                <ResultCard
-                  label={content.title}
-                  value={content.finalResult}
-                />
-              </div>
-            )}
-          </ResultSection>
+      <ResultSection tag="Resultado Final" title="Resultados finais">
+        <div className="results-grid">
+          {resultContents.map((content) => (
+            <ResultCard
+              key={content.title}
+              label={content.title}
+              value={content.finalResult}
+            />
+          ))}
         </div>
-      ))}
+      </ResultSection>
+
+      <ResultSection tag="Explicação" title="Como foi calculado">
+        <CalculationExplanation values={values} result={result} />
+      </ResultSection>
     </div>
   );
 }

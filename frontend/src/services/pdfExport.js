@@ -1,6 +1,6 @@
 ﻿import { jsPDF } from "jspdf";
+import { getCalculationExplanation } from "../utils/calculationExplanation";
 import { getPanelContents } from "../utils/reportSections";
-import { formatNumber } from "../utils/formatters";
 
 function createPdfHelpers(doc) {
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -73,8 +73,11 @@ function createPdfHelpers(doc) {
     ensureSpace(12);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(11);
-    doc.text(headers[0], margin, cursorY);
-    doc.text(headers[1], margin + 90, cursorY);
+    const columnWidth = (pageWidth - margin * 2) / headers.length;
+
+    headers.forEach((header, index) => {
+      doc.text(String(header), margin + index * columnWidth, cursorY);
+    });
     cursorY += 6;
 
     doc.setDrawColor(215, 226, 239);
@@ -84,8 +87,13 @@ function createPdfHelpers(doc) {
     items.forEach((item) => {
       ensureSpace(8);
       doc.setFont("helvetica", "normal");
-      doc.text(String(item.first), margin, cursorY);
-      doc.text(String(item.second), margin + 90, cursorY);
+      const values = Array.isArray(item)
+        ? item
+        : headers.map((header, index) => item[header] ?? item[index] ?? "-");
+
+      values.forEach((value, index) => {
+        doc.text(String(value), margin + index * columnWidth, cursorY);
+      });
       cursorY += 7;
     });
   }
@@ -115,32 +123,32 @@ export function exportStatisticsPdf({
   const doc = new jsPDF();
   const pdf = createPdfHelpers(doc);
   const sections = getPanelContents("geral", selectedDataType, values, result, processedData);
+  const tableSection = sections.find((section) => section.tableItems);
+  const resultSections = sections.filter((section) => !section.tableItems);
+  const explanationItems = getCalculationExplanation(values, result);
 
   pdf.addTitle("Calculadora Estatística - Grupo X");
-  pdf.addLabelValue("Dados informados", inputSummary);
-  pdf.addLabelValue("Valores processados", values.map(formatNumber).join(", "));
+  pdf.addLabelValue("Dados informados", `${values.length} valores informados`);
   pdf.addDivider();
 
-  sections.forEach((section) => {
-    pdf.addSubtitle(section.title);
-    pdf.addLabelValue("Fórmula", section.formula);
-    pdf.addLabelValue("Cálculo", section.calculation);
-    pdf.addLabelValue("Resultado", section.finalResult);
-
-    if (section.steps?.length) {
-      pdf.addParagraph("Detalhamento:");
-      pdf.addStepList(section.steps);
-    }
-
-    if (section.tableItems?.length) {
-      pdf.addFrequencyTableWithHeaders(
-        section.title,
-        section.tableHeaders ?? ["Valor", "Frequência"],
-        section.tableItems
-      );
-    }
-
+  if (tableSection?.tableItems?.length) {
+    pdf.addFrequencyTableWithHeaders(
+      tableSection.title,
+      tableSection.tableHeaders ?? ["Valor", "Frequência"],
+      tableSection.tableItems
+    );
     pdf.addDivider();
+  }
+
+  pdf.addSubtitle("Resultados finais");
+  resultSections.forEach((section) => {
+    pdf.addLabelValue(section.title, section.finalResult);
+  });
+  pdf.addDivider();
+
+  pdf.addSubtitle("Como foi calculado");
+  explanationItems.forEach((item) => {
+    pdf.addLabelValue(item.title, `${item.formula}. ${item.text}`);
   });
 
   pdf.save("calculadora-estatistica-grupo-x.pdf");
