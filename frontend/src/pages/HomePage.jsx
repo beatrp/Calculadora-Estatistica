@@ -7,20 +7,38 @@ import { exportStatisticsPdf } from "../services/pdfExport";
 import { normalizeInputData } from "../utils/inputNormalization";
 import { calculateStatistics } from "../utils/statistics";
 
+function getAutomaticDataType(valueCount) {
+  if (valueCount > 25) {
+    return "interval";
+  }
+
+  if (valueCount >= 20) {
+    return "grouped";
+  }
+
+  return "nonGrouped";
+}
+
 function HomePage() {
-  const [selectedDataType, setSelectedDataType] = useState("nonGrouped");
   const [rawInput, setRawInput] = useState("10, 12, 12, 18, 20");
-  const [selectedAction, setSelectedAction] = useState("Tabela");
   const [result, setResult] = useState(null);
   const [calculatedValues, setCalculatedValues] = useState([]);
   const [calculatedInputSummary, setCalculatedInputSummary] = useState("");
   const [processedData, setProcessedData] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const normalizedInput = useMemo(() => normalizeInputData(rawInput), [rawInput]);
+  const currentDataType = useMemo(
+    () => getAutomaticDataType(normalizedInput.values?.length ?? 0),
+    [normalizedInput.values]
+  );
+  const calculatedDataType = useMemo(
+    () => getAutomaticDataType(calculatedValues.length),
+    [calculatedValues.length]
+  );
+  const selectedDataType = result ? calculatedDataType : currentDataType;
 
-  function runCalculation(action) {
+  function runCalculation() {
     setErrorMessage("");
-    setSelectedAction(action);
 
     const {
       values,
@@ -59,7 +77,7 @@ function HomePage() {
 
   function handleSubmit(event) {
     event.preventDefault();
-    runCalculation(selectedAction);
+    runCalculation();
   }
 
   function handleExportPdf() {
@@ -95,13 +113,9 @@ function HomePage() {
 
       <section className="content-grid">
         <StatsInputForm
-          selectedDataType={selectedDataType}
-          onDataTypeChange={setSelectedDataType}
           rawInput={rawInput}
           onInputChange={setRawInput}
           onSubmit={handleSubmit}
-          selectedAction={selectedAction}
-          onActionTrigger={runCalculation}
           isLoading={false}
           errorMessage={errorMessage}
         />
@@ -111,10 +125,9 @@ function HomePage() {
             <div className="section-header">
               <span className="section-tag">Resultado</span>
               <h2>Resumo estatístico</h2>
-              <p>Digite os dados e escolha uma opção para ver os resultados.</p>
             </div>
 
-            {selectedAction === "geral" && result ? (
+            {result ? (
               <button
                 type="button"
                 className="secondary-button export-button"
@@ -127,7 +140,7 @@ function HomePage() {
 
           {result ? (
             <ResultPanel
-              selectedAction={selectedAction}
+              selectedAction="geral"
               selectedDataType={selectedDataType}
               values={calculatedValues}
               result={result}
@@ -137,7 +150,7 @@ function HomePage() {
             <div className="empty-state">
               <p>Nenhum cálculo realizado ainda.</p>
               <span>
-                Preencha os valores e use um dos botões de ação para ver os
+                Preencha os valores e use o botão de ação para ver os
                 resultados.
               </span>
             </div>
