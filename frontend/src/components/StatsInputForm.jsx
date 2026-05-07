@@ -13,7 +13,6 @@ function StatsInputForm({
       <div className="section-header">
         <span className="section-tag">Entrada</span>
         <h2>Insira os dados</h2>
-        <p>Informe os dados numéricos para gerar a análise automaticamente.</p>
       </div>
 
       <form onSubmit={onSubmit} className="stats-form">

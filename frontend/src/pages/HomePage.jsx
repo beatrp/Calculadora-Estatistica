@@ -4,20 +4,9 @@ import ResultPanel from "../components/ResultPanel";
 import StatsInputForm from "../components/StatsInputForm";
 import logo from "../assets/images/logo.svg";
 import { exportStatisticsPdf } from "../services/pdfExport";
+import { classifyDataType } from "../utils/dataClassification";
 import { normalizeInputData } from "../utils/inputNormalization";
 import { calculateStatistics } from "../utils/statistics";
-
-function getAutomaticDataType(valueCount) {
-  if (valueCount > 25) {
-    return "interval";
-  }
-
-  if (valueCount >= 20) {
-    return "grouped";
-  }
-
-  return "nonGrouped";
-}
 
 function HomePage() {
   const [rawInput, setRawInput] = useState("10, 12, 12, 18, 20");
@@ -28,12 +17,12 @@ function HomePage() {
   const [errorMessage, setErrorMessage] = useState("");
   const normalizedInput = useMemo(() => normalizeInputData(rawInput), [rawInput]);
   const currentDataType = useMemo(
-    () => getAutomaticDataType(normalizedInput.values?.length ?? 0),
+    () => classifyDataType(normalizedInput.values ?? []),
     [normalizedInput.values]
   );
   const calculatedDataType = useMemo(
-    () => getAutomaticDataType(calculatedValues.length),
-    [calculatedValues.length]
+    () => classifyDataType(calculatedValues),
+    [calculatedValues]
   );
   const selectedDataType = result ? calculatedDataType : currentDataType;
 
@@ -124,7 +113,6 @@ function HomePage() {
           <div className="output-header">
             <div className="section-header">
               <span className="section-tag">Resultado</span>
-              <h2>Resumo estatístico</h2>
             </div>
 
             {result ? (

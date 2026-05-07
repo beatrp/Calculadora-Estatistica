@@ -129,38 +129,36 @@ function buildFrequencyTableContent(values, frequencyItems) {
 function buildUngroupedTableContent(values, data) {
   if (!data || data.length === 0) {
     return {
-      title: "Tabela de Frequência - Dados Não Agrupados",
-      formula: "Cada valor distinto forma uma classe",
+      title: "Tabela de Frequência - Dados Agrupados sem Intervalos",
+      formula: "Cada valor distinto forma um grupo",
       calculation: "Nenhuma observação disponível",
       steps: ["Sem dados para exibir"],
-      finalResult: "Total: 0 | Classes: 0",
+      finalResult: "Total: 0 | Valores distintos: 0",
       tableItems: [],
-      tableHeaders: ["Classe", "Limites", "fi", "xi", "fr", "Fi", "Fr"],
+      tableHeaders: ["xi", "fi", "fr", "Fi", "Fr"],
     };
   }
 
   const sorted = [...values].sort((a, b) => a - b);
 
   return {
-    title: "Tabela de Frequência - Dados Não Agrupados",
+    title: "Tabela de Frequência - Dados Agrupados sem Intervalos",
     formula: "xi = valor, fi = frequência",
-    calculation: `Classes formadas a partir de ${values.length} observações`,
+    calculation: `Valores repetidos agrupados a partir de ${values.length} observações`,
     steps: [
       `Dados ordenados: ${sorted.map(formatNumber).join(", ")}`,
-      "Cada valor distinto foi tratado como uma classe.",
+      "Cada valor distinto foi tratado como um grupo.",
       "Calculamos fi, fr, Fi e Fr.",
     ],
-    finalResult: `Total: ${values.length} | Classes: ${data.length}`,
+    finalResult: `Total: ${values.length} | Valores distintos: ${data.length}`,
     tableItems: data.map((i) => [
-      String(i.classe),
-      formatNumber(i.limites),
-      String(i.fi),
       formatNumber(i.xi),
+      String(i.fi),
       formatNumber(i.fr),
       String(i.Fi),
       formatNumber(i.Fr),
     ]),
-    tableHeaders: ["Classe", "Limites", "fi", "xi", "fr", "Fi", "Fr"],
+    tableHeaders: ["xi", "fi", "fr", "Fi", "Fr"],
   };
 }
 
@@ -192,11 +190,11 @@ function buildTableContent(
   selectedDataType
 ) {
   if (selectedDataType === "nonGrouped") {
-    return buildUngroupedTableContent(values, ungroupedTableData);
+    return null;
   }
 
   if (selectedDataType === "grouped") {
-    return null;
+    return buildUngroupedTableContent(values, ungroupedTableData);
   }
 
   if (selectedDataType === "interval") {

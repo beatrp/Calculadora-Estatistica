@@ -498,6 +498,28 @@ select {
   flex-wrap: wrap;
 }
 
+.table-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.table-k {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  font-weight: 700;
+}
+
+.table-title-group {
+  justify-content: flex-end;
+  min-height: 40px;
+  text-align: right;
+}
+
 .result-table-title {
   display: inline-flex;
   align-items: center;

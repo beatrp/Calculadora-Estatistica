@@ -10,7 +10,7 @@ function ResultSection({ tag, title, children }) {
     <div className="panel nested-panel">
       <div className="section-header compact">
         <span className="section-tag">{tag}</span>
-        <h3>{title}</h3>
+        {title ? <h3>{title}</h3> : null}
       </div>
       {children}
     </div>
@@ -46,10 +46,10 @@ function ResultPanel({
   return (
     <div className="result-panel-content">
       {tableContent ? (
-        <ResultSection tag="Tabela" title={tableContent.title}>
-          <div className="result-table-header">
-            <p className="final-summary">{tableContent.finalResult}</p>
-            <div className="result-table-title">
+        <ResultSection tag="Tabela">
+          <div className="table-meta-row">
+            <p className="final-summary table-k">{tableContent.finalResult}</p>
+            <div className="result-table-title table-title-group" aria-label="Informações da tabela">
               <span className="result-table-title-text">{tableContent.title}</span>
               <InfoTooltip />
             </div>
@@ -62,7 +62,7 @@ function ResultPanel({
         </ResultSection>
       ) : null}
 
-      <ResultSection tag="Resultado Final" title="Resultados finais">
+      <ResultSection tag="Resultado Final">
         <div className="results-grid">
           {resultContents.map((content) => (
             <ResultCard
@@ -74,7 +74,7 @@ function ResultPanel({
         </div>
       </ResultSection>
 
-      <ResultSection tag="Explicação" title="Como foi calculado">
+      <ResultSection tag="Explicação">
         <CalculationExplanation values={values} result={result} />
       </ResultSection>
     </div>
