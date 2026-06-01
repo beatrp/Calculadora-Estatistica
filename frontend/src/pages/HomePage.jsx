@@ -1,5 +1,4 @@
 ﻿import { useMemo, useState } from "react";
-import Footer from "../components/Footer";
 import ResultPanel from "../components/ResultPanel";
 import StatsInputForm from "../components/StatsInputForm";
 import logo from "../assets/images/logo.svg";
@@ -80,23 +79,19 @@ function HomePage() {
   }
 
   return (
-    <main className="page-shell">
-      <section className="hero">
+    <>
+      <section className="hero" id="descritiva">
         <div className="hero-content">
           <div className="hero-title-row">
             <img
               src={logo}
-              alt="Grupo Crises Logo"
+              alt="Logo da Calculadora Estatística"
               className="hero-logo"
               width="90"
               height="90"
             />
-            <h1>Calculadora Estatística 1.0 - Grupo Crises</h1>
+            <h1>Estatística Descritiva</h1>
           </div>
-          <p className="hero-text">
-            Calcule média, mediana, moda, amplitude, desvio padrão populacional e
-            visualize a tabela de frequência em um único painel.
-          </p>
         </div>
       </section>
 
@@ -111,10 +106,6 @@ function HomePage() {
 
         <section className="panel output-panel">
           <div className="output-header">
-            <div className="section-header">
-              <span className="section-tag">Resultado</span>
-            </div>
-
             {result ? (
               <button
                 type="button"
@@ -145,8 +136,7 @@ function HomePage() {
           )}
         </section>
       </section>
-      <Footer />
-    </main>
+    </>
   );
 }
 

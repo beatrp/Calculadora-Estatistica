@@ -3,6 +3,7 @@ import CalculationExplanation from "./CalculationExplanation";
 import FrequencyTable from "./FrequencyTable";
 import InfoTooltip from "./InfoTooltip";
 import ResultCard from "./ResultCard";
+import { formatNumber } from "../utils/formatters";
 import { getPanelContents } from "../utils/reportSections";
 
 function ResultSection({ tag, title, children }) {
@@ -35,6 +36,14 @@ function ResultPanel({
       ),
     [selectedAction, selectedDataType, values, result, processedData]
   );
+  const orderedValues = useMemo(
+    () =>
+      values
+        .filter((value) => Number.isFinite(value))
+        .slice()
+        .sort((a, b) => a - b),
+    [values]
+  );
 
   if (!contents || contents.length === 0) {
     return null;
@@ -59,6 +68,18 @@ function ResultPanel({
             items={tableContent.tableItems}
             headers={tableContent.tableHeaders}
           />
+        </ResultSection>
+      ) : null}
+
+      {orderedValues.length > 0 ? (
+        <ResultSection tag="Rol de dados" title="Dados em ordem crescente">
+          <div className="ordered-data-list" aria-label="Dados em ordem crescente">
+            {orderedValues.map((value, index) => (
+              <span className="ordered-data-chip" key={`${value}-${index}`}>
+                {formatNumber(value)}
+              </span>
+            ))}
+          </div>
         </ResultSection>
       ) : null}
 
