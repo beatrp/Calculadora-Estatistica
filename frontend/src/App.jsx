@@ -8,7 +8,7 @@ const INFERENTIAL_URL = "https://estatistica-inferencial.vercel.app/";
 const DESCRIPTIVE_URL = "https://calculadora-estatistica.vercel.app/";
 
 function App() {
-  const [view, setView] = useState("home");
+  const [view] = useState("descriptive");
 
   const openHome = () => {
     window.location.href = HOME_URL;
