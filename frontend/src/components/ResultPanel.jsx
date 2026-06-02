@@ -6,9 +6,13 @@ import ResultCard from "./ResultCard";
 import { formatNumber } from "../utils/formatters";
 import { getPanelContents } from "../utils/reportSections";
 
-function ResultSection({ tag, title, children }) {
+function ResultSection({ tag, title, className = "", children }) {
+  const sectionClassName = ["panel", "nested-panel", className]
+    .filter(Boolean)
+    .join(" ");
+
   return (
-    <div className="panel nested-panel">
+    <div className={sectionClassName}>
       <div className="section-header compact">
         <span className="section-tag">{tag}</span>
         {title ? <h3>{title}</h3> : null}
@@ -54,11 +58,30 @@ function ResultPanel({
 
   return (
     <div className="result-panel-content">
+      {orderedValues.length > 0 ? (
+        <ResultSection
+          tag="Rol de dados"
+          title="Dados em ordem crescente"
+          className="ordered-data-section"
+        >
+          <div className="ordered-data-list" aria-label="Dados em ordem crescente">
+            {orderedValues.map((value, index) => (
+              <span className="ordered-data-chip" key={`${value}-${index}`}>
+                {formatNumber(value)}
+              </span>
+            ))}
+          </div>
+        </ResultSection>
+      ) : null}
+
       {tableContent ? (
         <ResultSection tag="Tabela">
           <div className="table-meta-row">
             <p className="final-summary table-k">{tableContent.finalResult}</p>
-            <div className="result-table-title table-title-group" aria-label="Informações da tabela">
+            <div
+              className="result-table-title table-title-group"
+              aria-label="Informações da tabela"
+            >
               <span className="result-table-title-text">{tableContent.title}</span>
               <InfoTooltip />
             </div>
@@ -68,18 +91,6 @@ function ResultPanel({
             items={tableContent.tableItems}
             headers={tableContent.tableHeaders}
           />
-        </ResultSection>
-      ) : null}
-
-      {orderedValues.length > 0 ? (
-        <ResultSection tag="Rol de dados" title="Dados em ordem crescente">
-          <div className="ordered-data-list" aria-label="Dados em ordem crescente">
-            {orderedValues.map((value, index) => (
-              <span className="ordered-data-chip" key={`${value}-${index}`}>
-                {formatNumber(value)}
-              </span>
-            ))}
-          </div>
         </ResultSection>
       ) : null}
 

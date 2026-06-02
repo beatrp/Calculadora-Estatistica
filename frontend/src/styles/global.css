@@ -605,11 +605,18 @@ select {
   gap: 2px;
 }
 
+.ordered-data-section {
+  margin-bottom: 24px;
+}
+
 .ordered-data-list {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   margin-top: 2px;
+  max-height: 180px;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
 .ordered-data-chip {
